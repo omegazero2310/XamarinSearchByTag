@@ -1,1 +1,1 @@
-# TestSearchByTag
+# SearchByTag example
