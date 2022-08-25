@@ -24,46 +24,50 @@ namespace TestSearchByTag.ViewModels
         {
             if (parameter?.ToString().Length > 0)
             {
-                //tách dấu cách
+                //split string base on space character
                 var listword = parameter.ToString().Split(' ').ToList();
-                //kiếm tra chuỗi có tag
+                //Start check string by tag
                 int indexStart = 0;
                 int indexEnd = 0;
                 var dict = new Dictionary<string, string>();
                 foreach (var keyword in listword.Where(str => str.Contains(":")))
                 {
-                    //nếu gặp tag
-                    if (keyword.Contains(":"))
+                    //get the name of tag, example "thisIsATag:A B C" return "thisIsATag"
+                    string tag = keyword.Split(':')[0];
+                    //if the tag not exist in the Dictionary, add it
+                    if (!dict.ContainsKey(tag))
                     {
-                        //lấy tên tag
-                        string tag = keyword.Split(':')[0];
-                        //chưa có tag thì thêm vào Dictionary
-                        if (!dict.ContainsKey(tag))
+                        //find the start index of a tag
+                        indexStart = listword.IndexOf(keyword);
+                        //get the string behind ":" character as starting word
+                        string word = string.Empty;
+                        StringBuilder stringBuilder = new StringBuilder();
+                        try
                         {
-                            //lấy index của tag
-                            indexStart = listword.IndexOf(keyword);
-                            //lấy chuỗi sau dấu ":" của tag và gẵn vào chuỗi đầu
-                            string word = keyword.Split(':')[1];
-                            StringBuilder stringBuilder = new StringBuilder();
+                            word = keyword.Split(':')[1];
                             stringBuilder.Append(word);
-                            //từ index này tìm index cuối cho đến khi gặp keyword khác
-                            indexEnd = listword.Skip(indexStart).ToList().IndexOf(listword.Where(str =>
-                                str.Contains(":") && string.Compare(str, keyword, true) != 0)
-                                .FirstOrDefault() ?? "");
-                            if (indexEnd == -1)
-                                indexEnd = listword.Count;
-                            //lấy chuỗi trong indexstart và indexend
-                            for (int i = indexStart + 1; i < indexEnd; i++)
-                            {
-                                stringBuilder.Append(" " + listword[i]);
-                            }
-                            //lưu lại vào từ điển 
-                            dict.Add(tag, stringBuilder.ToString());
                         }
-
+                        catch
+                        {
+                            stringBuilder.Append("");
+                        }
+                        //find the last index from the start index, indexEnd equal next tag index
+                        //exclude the current tag
+                        indexEnd = listword.Skip(indexStart).ToList().IndexOf(listword.Where(str =>
+                            str.Contains(":") && string.Compare(str, keyword, true) != 0)
+                            .FirstOrDefault() ?? "");
+                        if (indexEnd == -1)
+                            indexEnd = listword.Count;
+                        //get all the word in between 2 tag
+                        for (int i = indexStart + 1; i < indexEnd; i++)
+                        {
+                            stringBuilder.Append(" " + listword[i]);
+                        }
+                        //save to Dictionary
+                        dict.Add(tag, stringBuilder.ToString());
                     }
-
                 }
+                //output the Result
                 this.Result = JsonConvert.SerializeObject(dict);
             }
 
