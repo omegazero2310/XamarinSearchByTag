@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TestSearchByTag.Views.MainPage"
+             xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+             Title="{Binding Title}">
+
+    <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+        <Label Text="Welcome to Xamarin Forms and Prism!" />
+        <SearchBar x:Name="srcBar" >
+            <SearchBar.Behaviors>
+                <xct:EventToCommandBehavior EventName="TextChanged" Command="{Binding CommandName}" CommandParameter="{Binding Text, Source={x:Reference srcBar}}"/>
+            </SearchBar.Behaviors>
+        </SearchBar>
+        <Label Text="{Binding Result}" TextColor="Red" FontSize="Medium"/>
+    </StackLayout>
+
+</ContentPage>
